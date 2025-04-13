@@ -1,4 +1,7 @@
-welcome=Привет { $user }, я бот который собирает информацию из Dota 2\.
+welcome_text= """
+welcome = Привет { $user }, я бот который собирает информацию из Dota 2\.
+    Исходный код доступен на GitHub: { $github }
+"""
 language-selected=Вы выбрали русский язык\!
 language-select=Выберите язык
 back=Вернуться в меню

@@ -1,4 +1,7 @@
-welcome=Hi { $user }, I'm a bot that collects information from Dota 2\.
+welcome_text="""
+welcome = Hi { $user }, I'm a bot that collects information from Dota 2\.
+    The source code is available on GitHub: { $github }
+"""
 language-selected=Have you chosen English\!
 language-select=Select a language
 back=Back to the menu

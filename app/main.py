@@ -1,8 +1,4 @@
 """Engine bot"""
-# Прописать больше информации в функциях (проименовать их в том числе), исправить групповой хендлер
-# В private всё без о ш и б о к
-# Потом уже Dockerfile, README.md, gitignore и залив на хост
-
 import logging
 import asyncio
 

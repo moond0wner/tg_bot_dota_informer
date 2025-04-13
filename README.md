@@ -48,6 +48,15 @@ A Telegram bot that uses the OpenDota API to provide information about Dota 2. T
     4.  The bot will provide: Information about the participants, results, duration, and other statistics of the match.
 *   **Errors:** The bot will notify you if the match is not found or the ID is entered incorrectly.
 
+### 4. Language
+
+*   **Description:** Changes the language spoken by the bot.
+*   **Interaction:**
+    1.  Click the "Language" button.
+    2.  The bot will prompt you to choose the language Russian or English.
+    3.  Select the suggested language and return to the main menu.
+    
+
 ## Developers
 
 - [moond0wner](https://github.com/moond0wner)

@@ -41,7 +41,8 @@ async def show_main_menu(message: Message,
         )
     else:
         await message.answer(
-            text=locale.welcome(user=message.from_user.full_name),
+            text=locale.welcome(user=message.from_user.full_name,
+                                github='[Github](https://github.com/moond0wner/tg_bot_dota_informer)'),
             reply_markup=await get_inline_buttons(
                 btns={
                     'account_info': locale.get_info_about_account(),
