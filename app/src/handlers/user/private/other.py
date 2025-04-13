@@ -24,7 +24,6 @@ async def process_account_id(
 
     try:
         account_id = AccountSchema(account_id=int(account_id))
-        logging.info(f'After: {account_id}, {type(account_id.account_id)}')
         await state.update_data(account_id=account_id.account_id)
         await bot.send_message(
             chat_id=chat_id,

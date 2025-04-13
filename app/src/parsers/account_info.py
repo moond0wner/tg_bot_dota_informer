@@ -110,7 +110,7 @@ async def get_info_about_account(account_id: int,
         last_match_info = await get_last_match_info(account_id, locale)
 
         if player_data is None or wl_data is None:
-            return "Не удалось получить данные об аккаунте"
+            return None
 
         try:
             total_winrate = wl_data['win'] / (wl_data['win'] + wl_data['lose']) * 100
