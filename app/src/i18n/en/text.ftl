@@ -1,7 +1,5 @@
-welcome_text="""
-welcome = Hi { $user }, I'm a bot that collects information from Dota 2\.
-    The source code is available on GitHub: { $github }
-"""
+welcome=Hi **{ $user }**, I'm a bot that collects information from Dota 2\.
+github=The source code is available on GitHub: { $github }
 language-selected=Have you chosen English\!
 language-select=Select a language
 back=Back to the menu
@@ -12,18 +10,6 @@ detected_account=Account accepted\. I'm starting to process\.\.\.
 detected_match=The match with ID is accepted\. I'm starting to process it\.\.\.
 starting_search=I'm starting to search for accounts\.\.\.
 no_information_about_players_of_match=There is no information about the players for this match\.
-help_text = """
-help =
-    **My Commands:**
-
-    `/getaccount [account id]` - Gets information about the Dota 2 account by its ID\.
-
-    `/getmatch [match id]` - Gets information about a Dota 2 match by its ID`.
-
-    The source code of the project is posted on GitHub: { $github }
-
-    For help or bug reports, please visit { $github } or contact us at [email protected]
-"""
 
 
 query_none=Account information could not be retrieved\.

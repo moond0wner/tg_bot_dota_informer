@@ -41,8 +41,7 @@ async def show_main_menu(message: Message,
         )
     else:
         await message.answer(
-            text=locale.welcome(user=message.from_user.full_name,
-                                github='[Github](https://github.com/moond0wner/tg_bot_dota_informer)'),
+            text=locale.welcome_text.welcome(user=message.from_user.full_name),
             reply_markup=await get_inline_buttons(
                 btns={
                     'account_info': locale.get_info_about_account(),
@@ -53,6 +52,9 @@ async def show_main_menu(message: Message,
                 sizes=(1,)
             )
         )
+
+        await message.answer(text=locale.github(github="[Github](https://github.com/moond0wner)"))
+
 
     await state.clear()
 
