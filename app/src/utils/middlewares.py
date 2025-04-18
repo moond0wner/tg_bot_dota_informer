@@ -1,8 +1,6 @@
 """Bot middlewares"""
 
-import asyncio
 import logging
-import time
 from typing import Any, Awaitable, Callable, Dict
 
 from fluentogram import TranslatorHub
@@ -10,7 +8,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import Update, Message
 from cachetools import TTLCache
 
-from ..redis.requests import check_language_user
+from ..database.requests import check_language_user, set_user
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -18,6 +16,21 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 caches = {
     "default": TTLCache(maxsize=10_000, ttl=0.1)
 }
+
+class UserMiddleware(BaseMiddleware):
+    """
+    Проверяет находиться ли пользователь в базе данных, если нет то добавляет
+    """
+
+    async def __call__(
+            self,
+            handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+            event: Message,
+            data: Dict[str, Any]
+    ) -> Any:
+        await set_user(tg_id=event.from_user.id, name=event.from_user.username)
+
+        return await handler(event, data)
 
 
 class TranslateMiddleware(BaseMiddleware):

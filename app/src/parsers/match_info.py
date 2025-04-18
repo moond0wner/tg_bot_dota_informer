@@ -1,5 +1,5 @@
 """Parsing info about match"""
-
+import logging
 import json
 from dataclasses import dataclass, asdict
 
@@ -134,11 +134,11 @@ async def get_last_match_info(account_id: int,
             locale.radiant() if match_data['radiant_win'] else locale.dire()
         ]
     except aiohttp.ClientError as e:
-        print(f"Ошибка при запросе к API: {e}")
+        logging.error(f"Ошибка при запросе к API: {e}")
         return []
     except (KeyError, TypeError) as e:
-        print(f"Ошибка при обработке данных: {e}")
+        logging.error(f"Ошибка при обработке данных: {e}")
         return []
     except Exception as e:
-        print(f"Неизвестная ошибка: {e}")
+        logging.error(f"Неизвестная ошибка: {e}")
         return []

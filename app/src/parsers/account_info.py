@@ -99,6 +99,7 @@ async def get_winrate_last_twenty_matches(account_id: int) -> Optional[Dict]:
         logging.error(f"Неизвестная ошибка при запросе winrate (20): {e}")
         return None
 
+
 async def get_info_about_account(account_id: int,
                                  locale: TranslatorRunner) -> AccountInfo:
     """Возвращает полную информацию о профиле игрока."""

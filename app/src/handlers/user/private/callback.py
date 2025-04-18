@@ -7,8 +7,8 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from fluentogram import TranslatorRunner
 
-from ....redis.requests import check_language_user, save_user_language
-from ....utils.keyboards import get_inline_buttons
+from ....database.requests import check_language_user, save_user_language
+from ....utils.keyboards import get_inline_buttons, start_buttons
 from ....parsers.match_info import get_info_about_players_of_match
 from .other import process_account_id, show_page, show_carousel
 from .states import Info
@@ -36,15 +36,7 @@ async def show_main_menu(callback: CallbackQuery,
     else:
         await callback.message.answer(
             text=locale.welcome(user=callback.from_user.full_name),
-            reply_markup=await get_inline_buttons(
-                btns={
-                    'account_info': locale.get_info_about_account(),
-                    'account_by_nick': locale.search_account_by_nickname(),
-                    'match_info': locale.get_info_about_match(),
-                    'change_language': 'Language 💬'
-                },
-                sizes=(1,)
-            )
+            reply_markup=await start_buttons(locale)
         )
     await state.clear()
 

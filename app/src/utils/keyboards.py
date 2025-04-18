@@ -94,14 +94,7 @@ async def get_inline_buttons(
 
     return keyboard.adjust(*sizes).as_markup()
 
-# Для группового чата
-async def get_inline_url_button(text, url):
-    builder = InlineKeyboardBuilder()
-    button_url = (InlineKeyboardButton(text=text, url=url))
-    builder.row(button_url)
-    return builder.as_markup()
 
-# Для диалогового чата
 async def special_button_for_account(url: str,
                                      locale: TranslatorRunner) -> InlineKeyboardMarkup:
     # Создаем клавиатуру
@@ -122,6 +115,27 @@ async def special_button_for_account(url: str,
 
     return keyboard.adjust(1).as_markup()
 
+async def start_buttons(locale: TranslatorRunner):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=locale.get_info_about_account(), callback_data='account_info'),
+            ],
+            [
+                InlineKeyboardButton(text=locale.search_account_by_nickname(), callback_data='account_by_nick')
+            ],
+            [
+                InlineKeyboardButton(text=locale.get_info_about_match(), callback_data='match_info')
+            ],
+            [
+                InlineKeyboardButton(text='Language 💬', callback_data='change_language')
+            ],
+            [
+                InlineKeyboardButton(text='Source code 👀', url='https://github.com/moond0wner/tg_bot_dota_informer')
+            ],
+        ]
+    )
+    return keyboard
 
 
 async def get_reply_buttons(

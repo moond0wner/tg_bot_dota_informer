@@ -13,9 +13,9 @@ from pydantic import ValidationError
 
 from ....parsers.account_info import search_account_by_nickname
 from ....parsers.match_info import get_general_info_about_match
-from ....redis.requests import check_language_user
+from ....database.requests import check_language_user
 from ....utils.formatted_output import format_button_result, format_general_match_info
-from ....utils.keyboards import get_inline_buttons, account_buttons
+from ....utils.keyboards import get_inline_buttons, account_buttons, start_buttons
 from ....utils.schemas import MatchSchema
 from .other import process_account_id
 from .states import Info
@@ -25,7 +25,7 @@ router.message.filter(F.chat.type == "private")
 
 
 @router.message(CommandStart())
-async def show_main_menu(message: Message,
+async def _(message: Message,
                          state: FSMContext,
                              locale: TranslatorRunner):
     language = await check_language_user(message.from_user.id)
@@ -41,20 +41,9 @@ async def show_main_menu(message: Message,
         )
     else:
         await message.answer(
-            text=locale.welcome_text.welcome(user=message.from_user.full_name),
-            reply_markup=await get_inline_buttons(
-                btns={
-                    'account_info': locale.get_info_about_account(),
-                    'account_by_nick': locale.search_account_by_nickname(),
-                    'match_info': locale.get_info_about_match(),
-                    'change_language': 'Language 💬'
-                },
-                sizes=(1,)
-            )
+            text=locale.welcome(user=message.from_user.full_name),
+            reply_markup=await start_buttons(locale)
         )
-
-        await message.answer(text=locale.github(github="[Github](https://github.com/moond0wner)"))
-
 
     await state.clear()
 
