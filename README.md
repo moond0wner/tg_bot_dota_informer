@@ -8,6 +8,9 @@
    <img src="https://img.shields.io/badge/License-_MIT-green" alt="License">
 </p>
 
+## Get started
+@dota_informer_bot
+
 ## About
 
 A Telegram bot that uses the OpenDota API to provide information about Dota 2. The functions of viewing accounts, match details, player statistics in matches, and searching for accounts by nickname are implemented.
