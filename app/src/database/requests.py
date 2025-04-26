@@ -1,11 +1,14 @@
 """Request to Redis"""
+
 import logging
 from typing import List
+
+from sqlalchemy import select
 
 from ..database.engine import async_session
 from ..database.models import User
 
-from sqlalchemy import select
+
 
 async def set_user(tg_id: int, name: str) -> None:
     """Добавляет пользователя в БД, если его ещё там нет"""
@@ -15,25 +18,25 @@ async def set_user(tg_id: int, name: str) -> None:
             if not user:
                 session.add(User(tg_id=tg_id, name=name))
                 await session.commit()
-                logging.info(f'Пользователь {tg_id} успешно зарегистрирован!')
+                logging.info(f"Пользователь {tg_id} успешно зарегистрирован!")
     except Exception as e:
-        logging.error(f'Ошибка в set_user: {e}')
+        logging.error(f"Ошибка в set_user: {e}")
         raise e
 
 
 async def get_users() -> List[User]:
     """Возвращает список пользователей из БД"""
     try:
-       async with async_session() as session:
-           users = await session.scalars(select(User))
-           return [user.tg_id for user in users.all()]
+        async with async_session() as session:
+            users = await session.scalars(select(User))
+            return [user.tg_id for user in users.all()]
 
     except Exception as e:
         logging.error(f"Ошибка в get_users: {e}")
         return []
 
 
-async def save_user_language(tg_id: int, language: str)-> None:
+async def save_user_language(tg_id: int, language: str) -> None:
     """Записывает выбранный пользователем язык в БД"""
     try:
         async with async_session() as session:
@@ -43,7 +46,7 @@ async def save_user_language(tg_id: int, language: str)-> None:
             await session.commit()
 
     except Exception as e:
-        logging.error(f'Ошибка в select_user_language: {e}')
+        logging.error(f"Ошибка в select_user_language: {e}")
         raise e
 
 
@@ -53,10 +56,10 @@ async def check_language_user(tg_id: int) -> str:
         async with async_session() as session:
             query = await session.scalar(select(User).where(User.tg_id == tg_id))
             if query:
-                return query.language if query.language else ''
+                return query.language if query.language else ""
             else:
-                return ''
+                return ""
 
     except Exception as e:
-        logging.error(f'Ошибка в check_langauge_user: {e}')
-        return '' # возвращаю пустую строку если произошла ошибка
+        logging.error(f"Ошибка в check_langauge_user: {e}")
+        return ""  # возвращаю пустую строку если произошла ошибка

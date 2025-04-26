@@ -10,7 +10,7 @@ from fluentogram import TranslatorRunner
 from pydantic import ValidationError
 
 from ....utils.schemas import AccountSchema
-from ....parsers.account_info import AccountInfo, get_info_about_account
+from ....parsers.info import AccountInfo, get_info_about_account
 from ....utils.formatted_output import format_account_info, format_player_info_in_match
 from ....utils.keyboards import account_buttons, paginated_buttons, special_button_for_account
 
@@ -45,7 +45,7 @@ async def process_account_id(
             caption=result,
             reply_markup=await special_button_for_account(query.profile_url, locale),
         )
-        logging.info(f'Информация {account_id.account_id} успешно отправлена')
+        logging.info(f'Информация для пользователя "{account_id.account_id}" успешно отправлена')
     except ValidationError as e:
         await bot.send_message(chat_id=chat_id, text=locale.error_validation())
         logging.exception(f"Ошибка ValidationError: {e}")

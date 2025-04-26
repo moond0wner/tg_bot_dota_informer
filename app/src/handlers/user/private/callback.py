@@ -9,7 +9,7 @@ from fluentogram import TranslatorRunner
 
 from ....database.requests import check_language_user, save_user_language
 from ....utils.keyboards import get_inline_buttons, start_buttons
-from ....parsers.match_info import get_info_about_players_of_match
+from ....parsers.info import get_info_about_players_of_match
 from .other import process_account_id, show_page, show_carousel
 from .states import Info
 

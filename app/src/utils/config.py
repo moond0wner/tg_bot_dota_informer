@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Settings(BaseSettings):
     BOT_TOKEN: str
     DB_USER: str
@@ -12,7 +13,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     ADMINS: int
 
-    model_config =  SettingsConfigDict(env_file="../../../.env") #../../../.env
+    model_config = SettingsConfigDict()  # ../../../.env
+
 
 settings = Settings()
-
