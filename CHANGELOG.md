@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [1.0.0] - 2025-04-26
 
 ### 🚀 Features
 
@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 - *(i18n)* Улучшен текстовый контент
 
-## [1.0.0] - 2025-04-26
+## [unreleased]
 
 ### 🚀 Features
 
