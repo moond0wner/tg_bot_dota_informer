@@ -27,7 +27,8 @@ class AdminProtect(Filter):
 async def _(message: Message):
     await message.answer("Команды для администратора: "
                          "\n/help \- список команд\."
-                         "\n/sendall \- отправить всем пользователям бота сообщение\.")
+                         "\n/sendall \- отправить всем пользователям бота сообщение\."
+                         "\n/statistics \- статистика о пользователях\.")
 
 
 @router.message(AdminProtect(), Command('sendall'))
@@ -76,6 +77,14 @@ async def cancel_broadcast(callback: CallbackQuery, state: FSMContext):
     await callback.answer("Рассылка отменена.")
     await callback.message.edit_text("Рассылка отменена.")
     await state.clear()
+
+
+@router.message(AdminProtect(), Command('statistics'))
+async def get_statistics_bot(message: Message):
+    users = await get_users()
+    
+    text = f"Количество пользователей: {len(users)}"
+    await message.answer(text)
 
 
 async def send_message_to_user(bot: Bot, tg_id: int, message: str) -> bool:
