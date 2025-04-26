@@ -121,8 +121,14 @@ venv.bak/
 # PyCharm
 .idea/
 
+# VSCODE
+.vscode/
+
 # Ruff stuff:
 .ruff_cache/
 
 # PyPI configuration file
 .pypirc
+
+# pylint
+.pylintrc

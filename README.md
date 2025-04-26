@@ -13,7 +13,7 @@
 
 ## About
 
-A Telegram bot that uses the OpenDota API to provide information about Dota 2. The functions of viewing accounts, match details, player statistics in matches, and searching for accounts by nickname are implemented.
+A Telegram bot that uses the OpenDota API and DotaBuff to provide information about Dota 2. The functions of viewing accounts, match details, player statistics in matches, and searching for accounts by nickname are implemented.
 
 ## Documentation
 
@@ -66,3 +66,7 @@ A Telegram bot that uses the OpenDota API to provide information about Dota 2. T
 
 ## License
 Project tg_bot_dota_informer is distributed under the [MIT license](https://opensource.org/license/MIT)
+
+## Read this in other languages:
+
+•   [🇷🇺 Русский](README_RU.md)
