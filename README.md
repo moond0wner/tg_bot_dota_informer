@@ -69,4 +69,4 @@ Project tg_bot_dota_informer is distributed under the [MIT license](https://open
 
 ## Read this in other languages:
 
-•   [🇷🇺 Русский](README_RU.md)
+•   [🇷🇺 Русский](README-RU.md)
