@@ -1,9 +1,9 @@
 """Parsing info about account"""
 
 import logging
-import aiohttp
 from typing import Optional, Dict
 
+import aiohttp
 from fluentogram import TranslatorRunner
 from bs4 import BeautifulSoup
 
