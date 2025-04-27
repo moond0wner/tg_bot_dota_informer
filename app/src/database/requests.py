@@ -1,7 +1,7 @@
 """Request to Redis"""
 
 import logging
-from typing import List
+from typing import Dict, List
 
 from sqlalchemy import select
 
@@ -23,13 +23,18 @@ async def set_user(tg_id: int, name: str) -> None:
         raise e
 
 
-async def get_users() -> List[User]:
+async def get_users() -> List[Dict]:
     """Возвращает список пользователей из БД"""
     try:
         async with async_session() as session:
-            users = await session.scalars(select(User))
-            return [user.tg_id for user in users.all()]
-
+            result = await session.execute(select(User))
+            users = result.scalars().all()
+            user_data = []
+            for user in users:
+                user_data.append(
+                    {"user": user.name, "number_of_requests": user.number_of_requests}
+                )
+            return user_data
     except Exception as e:
         logging.error(f"Ошибка в get_users: {e}", exc_info=True)
         return []
@@ -62,3 +67,15 @@ async def check_language_user(tg_id: int) -> str:
     except Exception as e:
         logging.error(f"Ошибка в check_langauge_user: {e}", exc_info=True)
         return ""  # возвращаю пустую строку если произошла ошибка
+
+
+async def increment_user_request_count(tg_id: int):
+    """Увеличивает кол-во запросов пользователя в бота на единицу"""
+    try:
+        async with async_session() as session:
+            cart = await session.scalar(select(User).where(User.tg_id == tg_id))
+            cart.number_of_requests += 1
+            await session.commit()
+    except Exception as e:
+        logging.error(f"Ошибка в increment_user_request_count: {e}", exc_info=True)
+        raise e
