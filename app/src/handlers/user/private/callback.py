@@ -7,7 +7,11 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from fluentogram import TranslatorRunner
 
-from ....database.requests import check_language_user, save_user_language
+from ....database.requests import (
+    check_language_user,
+    save_user_language,
+    increment_user_request_count,
+)
 from ....utils.keyboards import get_inline_buttons, start_buttons
 from ....parsers.info import get_info_about_players_of_match
 from .other import process_account_id, show_page, show_carousel
@@ -76,6 +80,7 @@ async def handler_account_info(
     await callback.message.answer(locale.send.id.account())
 
     await state.set_state(Info.account_id)
+    await increment_user_request_count(callback.from_user.id)
 
 
 @router.callback_query(F.data == "match_info")
@@ -86,6 +91,7 @@ async def handler_match_info(
     await callback.message.answer(locale.send.id.match())
 
     await state.set_state(Info.match_id)
+    await increment_user_request_count(callback.from_user.id)
 
 
 @router.callback_query(F.data == "account_by_nick")
@@ -96,6 +102,7 @@ async def handler_account_by_nick(
     await callback.message.answer(locale.send.nickname())
 
     await state.set_state(Info.nickname)
+    await increment_user_request_count(callback.from_user.id)
 
 
 @router.callback_query(F.data.startswith("account_id:"))
