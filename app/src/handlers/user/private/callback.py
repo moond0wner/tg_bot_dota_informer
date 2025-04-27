@@ -17,108 +17,104 @@ router = Router()
 router.message.filter(F.chat.type == "private")
 
 
-@router.callback_query(F.data == 'back')
-async def show_main_menu(callback: CallbackQuery,
-                         state: FSMContext,
-                         locale: TranslatorRunner):
+@router.callback_query(F.data == "back")
+async def show_main_menu(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
     language = await check_language_user(callback.from_user.id)
     await callback.answer()
-    if language == '':
+    if language == "":
         await callback.message.answer(
             text=locale.language.select(),
             reply_markup=await get_inline_buttons(
-                btns={
-                    'select_ru': 'Русский',
-                    'select_en': 'English'
-                }
-            )
+                btns={"select_ru": "Русский", "select_en": "English"}
+            ),
         )
     else:
         await callback.message.answer(
             text=locale.welcome(user=callback.from_user.full_name),
-            reply_markup=await start_buttons(locale)
+            reply_markup=await start_buttons(locale),
         )
     await state.clear()
 
 
-@router.callback_query(F.data == 'change_language')
-async def change_language(
-        callback: CallbackQuery,
-        locale: TranslatorRunner):
+@router.callback_query(F.data == "change_language")
+async def change_language(callback: CallbackQuery, locale: TranslatorRunner):
     await callback.answer()
 
     await callback.message.answer(
         text=locale.language.select(),
-        reply_markup=await get_inline_buttons(btns={
-            'select_ru': 'Русский',
-            'select_en': 'English'
-        })
+        reply_markup=await get_inline_buttons(
+            btns={"select_ru": "Русский", "select_en": "English"}
+        ),
     )
 
 
-@router.callback_query(F.data.in_(['select_ru', 'select_en']))
+@router.callback_query(F.data.in_(["select_ru", "select_en"]))
 async def select_language(callback: CallbackQuery):
     user_id = callback.from_user.id
-    language = 'en' if callback.data == 'select_en' else 'ru'
+    language = "en" if callback.data == "select_en" else "ru"
 
     await save_user_language(user_id, language)
 
     await callback.answer()
     await callback.message.answer(
-        "Language selected\\!" if language == 'en' else 'Язык выбран успешно\\!',
+        "Language selected\\!" if language == "en" else "Язык выбран успешно\\!",
         reply_markup=await get_inline_buttons(
             btns={
-                'back': 'Вернуться в меню' if language == 'ru' else 'Back to the menu'
+                "back": "Вернуться в меню" if language == "ru" else "Back to the menu"
             }
-        )
+        ),
     )
 
 
-@router.callback_query(F.data == 'account_info')
-async def _(callback: CallbackQuery, state: FSMContext,
-            locale: TranslatorRunner):
+@router.callback_query(F.data == "account_info")
+async def handler_account_info(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
     await callback.answer()
     await callback.message.answer(locale.send.id.account())
 
     await state.set_state(Info.account_id)
 
 
-@router.callback_query(F.data == 'match_info')
-async def _(callback: CallbackQuery,
-            state: FSMContext,
-            locale: TranslatorRunner):
+@router.callback_query(F.data == "match_info")
+async def handler_match_info(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
     await callback.answer()
     await callback.message.answer(locale.send.id.match())
 
     await state.set_state(Info.match_id)
 
 
-@router.callback_query(F.data == 'account_by_nick')
-async def _(callback: CallbackQuery,
-            state: FSMContext,
-            locale: TranslatorRunner):
+@router.callback_query(F.data == "account_by_nick")
+async def handler_account_by_nick(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
     await callback.answer()
     await callback.message.answer(locale.send.nickname())
 
     await state.set_state(Info.nickname)
 
 
-@router.callback_query(F.data.startswith('account_id:'))
-async def _(callback: CallbackQuery,
-            state: FSMContext,
-            bot: Bot,
-            locale: TranslatorRunner):
+@router.callback_query(F.data.startswith("account_id:"))
+async def handler_account_id(
+    callback: CallbackQuery, state: FSMContext, bot: Bot, locale: TranslatorRunner
+):
     await callback.answer()
 
-    await process_account_id(callback.data.split(':')[-1], callback.message.chat.id, state, bot, locale)
+    await process_account_id(
+        callback.data.split(":")[-1], callback.message.chat.id, state, bot, locale
+    )
 
 
-@router.callback_query(F.data == 'get_info_about_players')
-async def _(callback: CallbackQuery,
-            state: FSMContext,
-            locale: TranslatorRunner):
+@router.callback_query(F.data == "get_info_about_players")
+async def handler_get_info_about_players(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
     match_data = await state.get_data()
-    match_id = match_data.get('match_id')
+    match_id = match_data.get("match_id")
 
     if match_id is None:
         await callback.answer(locale.match_not_found())
@@ -136,27 +132,23 @@ async def _(callback: CallbackQuery,
         await show_page(callback, state, 0, locale)
 
     except Exception as e:
-        logging.exception(f"{locale.error_getting_info_about_players} {e}")
-        await callback.answer(locale.error_getting_info_about_players)
+        logging.error(f"Ошибка handler_get_info_about_players: {e}", exc_info=True)
+        await callback.answer(locale.error_getting_info_about_players())
         return
 
 
-@router.callback_query(F.data.startswith('page:'))
-async def process_pagination(callback: CallbackQuery,
-                             state: FSMContext,
-                             locale: TranslatorRunner):
-    logging.info(f"Received callback data: {callback.data}")
+@router.callback_query(F.data.startswith("page:"))
+async def process_pagination(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
 
-    page = int(callback.data.split(':')[1])
+    page = int(callback.data.split(":")[1])
     await show_page(callback, state, page, locale)
 
 
-@router.callback_query(F.data.startswith('carousel:'))
-async def process_carousel(callback: CallbackQuery,
-                            state: FSMContext,
-                            locale: TranslatorRunner):
-    logging.info(f"Received callback data: {callback.data}")
-    page = int(callback.data.split(':')[1])
+@router.callback_query(F.data.startswith("carousel:"))
+async def process_carousel(
+    callback: CallbackQuery, state: FSMContext, locale: TranslatorRunner
+):
+    page = int(callback.data.split(":")[1])
     await show_carousel(callback, state, page, locale)
-
-
