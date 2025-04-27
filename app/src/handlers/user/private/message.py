@@ -25,81 +25,88 @@ router.message.filter(F.chat.type == "private")
 
 
 @router.message(CommandStart())
-async def _(message: Message,
-                         state: FSMContext,
-                             locale: TranslatorRunner):
+async def show_main_menu(message: Message, state: FSMContext, locale: TranslatorRunner):
     language = await check_language_user(message.from_user.id)
-    if language == '':
+    if language == "":
         await message.answer(
             text=locale.language.select(),
             reply_markup=await get_inline_buttons(
-                btns={
-                    'select_ru': 'Русский',
-                    'select_en': 'English'
-                }
-            )
+                btns={"select_ru": "Русский", "select_en": "English"}
+            ),
         )
     else:
         await message.answer(
             text=locale.welcome(user=message.from_user.full_name),
-            reply_markup=await start_buttons(locale)
+            reply_markup=await start_buttons(locale),
         )
 
     await state.clear()
 
 
 @router.message(Info.account_id, F.text)
-async def _(message: Message,
-            state: FSMContext,
-            bot: Bot,
-            locale: TranslatorRunner):
-   await process_account_id(message.text, message.chat.id, state, bot, locale)
-
+async def handler_get_account_id(
+    message: Message, state: FSMContext, bot: Bot, locale: TranslatorRunner
+):
+    await process_account_id(message.text, message.chat.id, state, bot, locale)
 
 
 @router.message(Info.match_id, F.text)
-async def _(message: Message,
-            state: FSMContext,
-            locale: TranslatorRunner):
+async def handler_get_match_id(
+    message: Message, state: FSMContext, locale: TranslatorRunner
+):
     try:
         match = int(message.text)
         match_id = MatchSchema(match_id=match)
         await state.update_data(match_id=match_id.match_id)
-        await message.answer(locale.detected_match(match_id=match_id.match_id),)
+        await message.answer(
+            locale.detected_match(match_id=match_id.match_id),
+        )
 
         query = await get_general_info_about_match(match_id.match_id, locale)
         result = format_general_match_info(query, locale)
 
-        await message.answer(result,
-        reply_markup=await get_inline_buttons(btns={"get_info_about_players": locale.get_info_about_players()}))
+        await message.answer(
+            result,
+            reply_markup=await get_inline_buttons(
+                btns={"get_info_about_players": locale.get_info_about_players()}
+            ),
+        )
 
-        await state.update_data(number_pages_for_match=int(query['quantity_players']))
+        await state.update_data(number_pages_for_match=int(query["quantity_players"]))
 
     except ValidationError as e:
         await message.answer(locale.error_validation())
-        logging.exception(f"Ошибка ValidationError: {e}")
+        logging.exception(
+            f"Ошибка ValidationError в handler_get_match_id: {e}", exc_info=True
+        )
         return
 
     except ValueError as e:
         await message.answer(f"{locale.incorrect_input()}. {e}")
-        logging.exception(f"Ошибка ValueError: {e}")
+        logging.exception(
+            f"Ошибка ValueError в handler_get_match_id: {e}", exc_info=True
+        )
         return
 
     except TelegramBadRequest as e:
         await message.answer(locale.error_sending())
-        logging.exception(f"Ошибка TelegramBadRequest: {e}")
+        logging.exception(
+            f"Ошибка TelegramBadRequest в handler_get_match_id: {e}", exc_info=True
+        )
         return
 
     except Exception as e:
         await message.answer(locale.unexcpected_error())
-        logging.exception(f"Ошибка Exception: {e}")
+        logging.exception(
+            f"Ошибка Exception в handler_get_match_id: {e}", exc_info=True
+        )
         return
 
 
 @router.message(Info.nickname, F.text)
-async def _(message: Message,
-            state: FSMContext,
-            locale: TranslatorRunner):
+async def handler_get_account_nickanme(
+    message: Message, state: FSMContext, locale: TranslatorRunner
+):
 
     await message.answer(locale.starting_search())
 
@@ -109,5 +116,6 @@ async def _(message: Message,
     await state.update_data(number_pages_for_accounts=len(result))
     await state.update_data(accounts_data=result)
 
-    await message.answer(locale.found_accounts(),
-                         reply_markup=await account_buttons(0, result, locale))
+    await message.answer(
+        locale.found_accounts(), reply_markup=await account_buttons(0, result, locale)
+    )
