@@ -9,7 +9,6 @@ from ..database.engine import async_session
 from ..database.models import User
 
 
-
 async def set_user(tg_id: int, name: str) -> None:
     """Добавляет пользователя в БД, если его ещё там нет"""
     try:
@@ -20,7 +19,7 @@ async def set_user(tg_id: int, name: str) -> None:
                 await session.commit()
                 logging.info(f"Пользователь {tg_id} успешно зарегистрирован!")
     except Exception as e:
-        logging.error(f"Ошибка в set_user: {e}")
+        logging.error(f"Ошибка в set_user: {e}", exc_info=True)
         raise e
 
 
@@ -32,7 +31,7 @@ async def get_users() -> List[User]:
             return [user.tg_id for user in users.all()]
 
     except Exception as e:
-        logging.error(f"Ошибка в get_users: {e}")
+        logging.error(f"Ошибка в get_users: {e}", exc_info=True)
         return []
 
 
@@ -46,7 +45,7 @@ async def save_user_language(tg_id: int, language: str) -> None:
             await session.commit()
 
     except Exception as e:
-        logging.error(f"Ошибка в select_user_language: {e}")
+        logging.error(f"Ошибка в select_user_language: {e}", exc_info=True)
         raise e
 
 
@@ -61,5 +60,5 @@ async def check_language_user(tg_id: int) -> str:
                 return ""
 
     except Exception as e:
-        logging.error(f"Ошибка в check_langauge_user: {e}")
+        logging.error(f"Ошибка в check_langauge_user: {e}", exc_info=True)
         return ""  # возвращаю пустую строку если произошла ошибка
