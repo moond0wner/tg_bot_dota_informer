@@ -1,10 +1,14 @@
-from sqlalchemy import DateTime, String, BigInteger
+from sqlalchemy import DateTime, String, BigInteger, func
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
 
 class Base(AsyncAttrs, DeclarativeBase):
-    updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+    created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+    updated: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now()
+    )
+
 
 class User(Base):
     __tablename__ = "users"
@@ -12,4 +16,4 @@ class User(Base):
     tg_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255))
     language: Mapped[str] = mapped_column(String(2), nullable=True)
-    number_of_requests: Mapped[int] = mapped_column()
+    number_of_requests: Mapped[int] = mapped_column(default=0, nullable=False)
