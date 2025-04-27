@@ -4,7 +4,7 @@
 
 <p align="center">
    <img src="https://img.shields.io/badge/python-_3.13-red" alt="Python Version">
-   <img src="https://img.shields.io/badge/Version-_v1.0%20(Alpha)-blue"alt="Project Version">
+   <img src="https://img.shields.io/badge/Version-_v1.0.1%20(Alpha)-blue"alt="Project Version">
    <img src="https://img.shields.io/badge/License-_MIT-green" alt="License">
 </p>
 
