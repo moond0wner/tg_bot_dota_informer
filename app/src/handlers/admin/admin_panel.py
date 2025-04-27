@@ -81,11 +81,20 @@ async def cancel_broadcast(callback: CallbackQuery, state: FSMContext):
 
 @router.message(AdminProtect(), Command('statistics'))
 async def get_statistics_bot(message: Message):
-    users = await get_users()
-    
-    text = f"Количество пользователей: {len(users)}"
-    await message.answer(text)
+    table = await get_users()
 
+    if not table:
+        await message.answer("Не удалось получить статистику пользователей.")
+        return
+
+    user_count = len(table)
+    top_five_users = [
+        f"Имя: {element['user']}, кол\-во запросов: {element['number_of_requests']}\n"
+        for element in table[:5] 
+    ]
+    text = f"Количество пользователей: {user_count}\nТоп 5 пользователей:\n{''.join(top_five_users)}"
+
+    await message.answer(text)
 
 async def send_message_to_user(bot: Bot, tg_id: int, message: str) -> bool:
     """Отправляет конкретному пользователю сообщение"""
