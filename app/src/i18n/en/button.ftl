@@ -1,5 +1,13 @@
 get_info_about_account=Account Information by ID 🎮
 search_account_by_nickname=Account search by nickname 🥷
-get_info_about_match=Match Information ⚔️
+get_info_about_match=Match Information by ID⚔️
 get_info_about_players=Information about the players 🗃
+donate=Support the project 💸
+user_profile=User profile 👨‍💻
+link_account=Link an account 🔐
+unlink_account=Unlink account 🔓
+check_account=View Account 📋
+additionally=Setup and support ➡️
+previous_page=⬅️ Previous page
+feedback=Feedback 💬
 back=To the main menu

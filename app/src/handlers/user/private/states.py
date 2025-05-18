@@ -1,5 +1,6 @@
 from aiogram.fsm.state import StatesGroup, State
 
+
 class Info(StatesGroup):
     account_id = State()
     match_id = State()
@@ -9,3 +10,7 @@ class Info(StatesGroup):
     number_pages_for_match = State()
     number_pages_for_accounts = State()
     page_item = State()
+
+
+class AnotherInfo(StatesGroup):
+    account_id = State()

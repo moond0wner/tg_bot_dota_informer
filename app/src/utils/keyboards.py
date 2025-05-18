@@ -12,6 +12,7 @@ from aiogram.types import (
     ReplyKeyboardRemove,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+from aiogram.filters import callback_data
 
 from fluentogram import TranslatorRunner
 
@@ -103,7 +104,7 @@ async def account_buttons(
         keyboard.row(InlineKeyboardButton(text=locale.back(), callback_data="back"))
         return keyboard.as_markup()
     except Exception as e:
-        logging.exception(f"Ошибка при создании кнопок аккаунтов: {e}")
+        logging.error("Ошибка при создании кнопок аккаунтов: %s", e, exc_info=True)
         raise e
 
 
@@ -121,7 +122,6 @@ async def get_inline_buttons(
 async def special_button_for_account(
     url: str, locale: TranslatorRunner
 ) -> InlineKeyboardMarkup:
-    # Создаем клавиатуру
     keyboard = InlineKeyboardBuilder()
 
     steam_button = InlineKeyboardButton(text="Steam profile", url=url)
@@ -134,13 +134,23 @@ async def special_button_for_account(
     return keyboard.adjust(1).as_markup()
 
 
-async def start_buttons(locale: TranslatorRunner):
+async def get_start_keyboard_page_1(locale: TranslatorRunner) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
+                    text=locale.user_profile(), callback_data="user_profile"
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     text=locale.get_info_about_account(), callback_data="account_info"
                 ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text=locale.get_info_about_match(), callback_data="match_info"
+                )
             ],
             [
                 InlineKeyboardButton(
@@ -150,14 +160,41 @@ async def start_buttons(locale: TranslatorRunner):
             ],
             [
                 InlineKeyboardButton(
-                    text=locale.get_info_about_match(), callback_data="match_info"
+                    text=locale.additionally(),
+                    callback_data=f"start_page: {2}"
                 )
             ],
+        ]
+    )
+    return keyboard
+
+
+async def get_start_keyboard_page_2(locale: TranslatorRunner) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
             [InlineKeyboardButton(text="Language 💬", callback_data="change_language")],
+            [
+                InlineKeyboardButton(
+                    text=locale.donate(), 
+                    callback_data="support_project"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=locale.feedback(),
+                    url="https://t.me/nevertoolate00"
+                )
+            ],
             [
                 InlineKeyboardButton(
                     text="Source code 👀",
                     url="https://github.com/moond0wner/tg_bot_dota_informer",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=locale.previous_page(),
+                    callback_data=f"start_page: {1}"
                 )
             ],
         ]

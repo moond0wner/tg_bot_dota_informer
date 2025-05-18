@@ -1,6 +1,6 @@
 language=en
 
-welcome=Hi *{ $user }*, I'm a bot that collects information from Dota 2\.
+welcome=*Test version*\. Hi *{ $user }*, I'm a bot that collects information from Dota 2\.
 github=The source code is available on GitHub: { $github }
 language-selected=Have you chosen English\!
 language-select=Select a language\.\.\.
@@ -12,7 +12,8 @@ detected_account=Account accepted\. I'm starting to process\.\.\.
 detected_match=The match accepted\. I'm starting to process it\.\.\.
 starting_search=I'm starting to search for accounts\.\.\.
 no_information_about_players_of_match=There is no information about the players for this match\.
-
+description_donate=You can voluntarily support this project, thereby ensuring its continued existence and contributing to the addition of new features. Voluntary support does not imply a refund (the exception is an error during donation).
+support_star=Support with a star!
 
 query_none=Account information could not be retrieved\. You may have sent the wrong `ID`, please try again\.
 error_validation=Validation error, enter the value again\!
@@ -22,15 +23,27 @@ unexpected_error=An unexpected error has occurred\.
 error_getting_info_about_players=An error occurred while receiving information about the players:
 error_not_found=The data was not found or has an incorrect format.
 match_not_found=The match `ID` was not found\. Please request information about the match first\.
+player_was_not_found=Player was not found\.\.\.
 
 damage_emoji=⚔️
 healing_emoji=❤️
 yes_emoji=✅
 no_emoji=❌
 
+games=Number of games:
+friends=Friends:
+lobby_type=Lobby type:
+game_mode=Mode: 
+account_unlinken=**The account is disconnected from your profile\.**
+account_is_linken=The account has been successfully linked\.
+account_is_not_linken=The account from Dota 2 is not linked\. Link an account for easy viewing of information\.
+last_request=The date of your last activity in the bot:
+date_registration=Date of registration in the bot:
+user_requests=Number of interactions with the bot:
 probably_account_hidden=*The account is probably hidden*
 found_accounts=Found accounts:
 name=Name:
+hero=Hero:
 unknown=Unknown
 radiant=Radiant
 dire=Dire

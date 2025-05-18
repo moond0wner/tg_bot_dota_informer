@@ -24,6 +24,31 @@ async def get_info_about_profile(account_id: int) -> Optional[Dict]:
     except Exception as e:
         logging.error(f"Неизвестная ошибка при запросе профиля: {e}")
         return None
+    
+async def get_info_about_peers(account_id: int):
+    """Возвращает отсортированный список с данными о друзьях пользователя из доты."""
+
+    url = f"https://api.opendota.com/api/players/{account_id}/peers"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                data = await response.json()
+        if not data:
+            return None
+        
+        players = []
+        for i in data:
+            players.append({'name': i['personaname'], 'account_id': i['account_id'], 'games': int(i["games"])})
+
+        sorted_players = sorted(players, key=lambda item: item['games'], reverse=True)  # Сортировка по количеству игр
+        return sorted_players
+    except aiohttp.ClientError as e:
+        logging.error("Ошибка клиента в get_info_about_peers: %s", e, exc_info=True)
+        return None
+    except Exception as e:
+        logging.error("Неизвестная ошибка при запросе профиля: %s", e, exc_info=True)
+        return None
 
 
 async def get_info_about_heroes(account_id: int) -> Optional[Dict]:
@@ -93,11 +118,7 @@ async def get_rank_account(account_id: int, locale: TranslatorRunner) -> str:
                     html = await response.text()
                     soup = BeautifulSoup(html, "html.parser")
 
-                    rank_element = (
-                        soup.find("div", class_="rank-tier-wrapper")["title"]
-                        .split(":")[1]
-                        .strip()
-                    )
+                    rank_element = (soup.find("div", class_="rank-tier-wrapper")["title"].split(":")[1].strip())
                     if rank_element:
                         return rank_element
                     else:
@@ -109,8 +130,8 @@ async def get_rank_account(account_id: int, locale: TranslatorRunner) -> str:
 
 
 async def search_account_by_nickname(name: str) -> Optional[Dict]:
-    """Возвращает информацию о найденных аккаунтах по заданному никнейму"""
-    url = f"https://api.opendota.com/api/search"
+    """Возвращает информацию о найденных аккаунтах по заданному никнейму."""
+    url = "https://api.opendota.com/api/search"
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params={"q": name}) as response:
@@ -118,8 +139,8 @@ async def search_account_by_nickname(name: str) -> Optional[Dict]:
                 data = await response.json()
         return data
     except aiohttp.ClientError as e:
-        logging.error(f"Ошибка при запросе: {e}")
+        logging.error("Ошибка при запросе (search_account_by_nickname): %e", e, exc_info=True)
         return None
     except Exception as e:
-        logging.error(f"Неизвестная ошибка при запросе: {e}")
+        logging.error("Неизвестная ошибка при запросе (search_account_by_nickname): %e", e, exc_info=True)
         return None

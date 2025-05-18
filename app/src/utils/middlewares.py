@@ -51,16 +51,14 @@ class TranslateMiddleware(BaseMiddleware):
 
         data["locale"] = hub.get_translator_by_locale(language)
 
-        logging.info(
-            f"Для пользователя {event.from_user.id} установлен язык: {language}"
-        )
+        logging.info("Для пользователя %s установлен язык: %s", event.from_user.id, language)
         return await handler(event, data)
 
 
 class ThrottlingMiddleware(BaseMiddleware):
     """Throttling middleware"""
 
-    def __init__(self, time_limit: int = 1) -> None:  # Исправлено: __init__
+    def __init__(self, time_limit: int = 1) -> None: 
         self.limit = TTLCache(maxsize=10_000, ttl=time_limit)
 
     async def __call__(
@@ -75,7 +73,7 @@ class ThrottlingMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         if event.from_user.id in self.limit:
-            logging.info(f"Троттлинг активен для пользователя: {event.from_user.id}")
+            logging.info("Троттлинг активен для пользователя: %s", event.from_user.id)
             return
         else:
             self.limit[event.from_user.id] = None

@@ -22,7 +22,7 @@ from ....utils.keyboards import (
 
 async def process_account_id(
     account_id: str, chat_id: int, state: FSMContext, bot: Bot, locale: TranslatorRunner
-):
+) -> None:
 
     try:
         account_id = AccountSchema(account_id=int(account_id))
@@ -35,12 +35,9 @@ async def process_account_id(
         query: AccountInfo = await get_info_about_account(account_id.account_id, locale)
         if query is None:
             await bot.send_message(chat_id=chat_id, text=locale.query_none())
-            return
+            return None
 
         result = format_account_info(query, locale)
-
-        if result.count("None") > 0:
-            result += f"\n\n{locale.probably_account_hidden()}"
 
         await bot.send_photo(
             chat_id=chat_id,
@@ -48,9 +45,7 @@ async def process_account_id(
             caption=result,
             reply_markup=await special_button_for_account(query.profile_url, locale),
         )
-        logging.info(
-            f'Информация для пользователя "{account_id.account_id}" успешно отправлена'
-        )
+        logging.info(f'Информация для пользователя "{chat_id}" успешно отправлена')
     except ValidationError as e:
         await bot.send_message(chat_id=chat_id, text=locale.error_validation())
         logging.exception(f"Ошибка ValidationError в process_account_id: {e}", exc_info=True)
@@ -104,7 +99,7 @@ async def show_page(
     try:
         text = format_player_info_in_match(json.loads(players_data), page, locale)
     except Exception as e:
-        logging.exception(f"Произошла ошибка при отображении страницы в show_page: {e}", exc_info=True)
+        logging.error("Произошла ошибка при отображении страницы в show_page: %s", e, exc_info=True)
         await callback.answer(locale.error_sending())
         return
 
@@ -113,12 +108,12 @@ async def show_page(
         await callback.message.edit_text(text, reply_markup=keyboard)
 
     except TelegramBadRequest as e:
-        logging.warning(f"TelegramBadRequest при редактировании сообщения в show_page: {e}", exc_info=True)
+        logging.error("TelegramBadRequest при редактировании сообщения в show_page: %s", e, exc_info=True)
         await callback.message.answer(locale.unexpected_error(), reply_markup=keyboard)
         return
 
     except Exception as e:
-        logging.exception(f"Произошла ошибка при отображении страницы в show_page: {e}", exc_info=True)
+        logging.error("Произошла ошибка при отображении страницы в show_page: %s", e, exc_info=True)
         await callback.answer(locale.error_sending())
         return
 

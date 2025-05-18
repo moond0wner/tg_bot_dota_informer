@@ -10,15 +10,25 @@ from aiogram.exceptions import TelegramBadRequest
 from fluentogram import TranslatorRunner
 from pydantic import ValidationError
 
-
+from ....handlers.user.private.callback import handler_link_account
 from ....parsers.account_info import search_account_by_nickname
 from ....parsers.match_info import get_general_info_about_match
-from ....database.requests import check_language_user
+from ....parsers.info import get_info_about_account
+from ....database.requests import (
+    check_language_user,
+    record_transaction,
+    register_user_in_profile_table,
+)
 from ....utils.formatted_output import format_button_result, format_general_match_info
-from ....utils.keyboards import get_inline_buttons, account_buttons, start_buttons
-from ....utils.schemas import MatchSchema
+from ....utils.keyboards import (
+    get_inline_buttons,
+    account_buttons,
+    get_start_keyboard_page_2,
+    get_start_keyboard_page_1,
+)
+from ....utils.schemas import MatchSchema, AccountSchema
 from .other import process_account_id
-from .states import Info
+from .states import Info, AnotherInfo
 
 router: Router = Router()
 router.message.filter(F.chat.type == "private")
@@ -37,7 +47,7 @@ async def show_main_menu(message: Message, state: FSMContext, locale: Translator
     else:
         await message.answer(
             text=locale.welcome(user=message.from_user.full_name),
-            reply_markup=await start_buttons(locale),
+            reply_markup=await get_start_keyboard_page_1(locale),
         )
 
     await state.clear()
@@ -119,3 +129,59 @@ async def handler_get_account_nickanme(
     await message.answer(
         locale.found_accounts(), reply_markup=await account_buttons(0, result, locale)
     )
+
+
+@router.message(AnotherInfo.account_id, F.text)
+async def handler_check_account_id(
+    message: Message, state: FSMContext, locale: TranslatorRunner
+):
+    await message.answer(locale.detected_account())
+    try:
+        account_id = AccountSchema(account_id=int(message.text))
+        query = await get_info_about_account(account_id.account_id, locale)
+        if query:
+            await register_user_in_profile_table(
+                message.from_user.id, account_id.account_id
+            )
+            await message.answer(
+                locale.account_is_linken(),
+                reply_markup=await get_inline_buttons(btns={"back": locale.back()}),
+            )
+            await state.clear()
+    except ValidationError as e:
+        await message.answer(locale.error_validation())
+        logging.exception(
+            "Ошибка ValidationError в handler_check_account_id: %e", e, exc_info=True
+        )
+        await handler_link_account(message, state, locale)
+        raise e
+
+    except Exception as e:
+        await message.answer(
+            locale.unexpected_error(),
+            reply_markup=await get_inline_buttons(btns={"back": locale.back()}),
+        )
+        logging.error("Ошибка в handler_check_account_id: %e", e, exc_info=True)
+        await state.clear()
+        raise e
+
+
+@router.message(F.successful_payment)
+async def handler_process_succesful_payment(message: Message, bot: Bot):
+    try:
+        await message.answer(
+            f"Спасибо за поддержку! Ваш платеж успешно обработан. ID транзакции: {message.successful_payment.telegram_payment_charge_id}\n",
+            message_effect_id="5104841245755180586",
+        )
+        await record_transaction(
+            tg_id=message.from_user.id,
+            amount=1,
+            transaction_id=message.successful_payment.telegram_payment_charge_id,
+        )
+
+    except Exception as e:
+        await message.answer("Произошла ошибка, пожертвование возвращено.")
+        await bot.refund_star_payment(
+            message.from_user.id, message.successful_payment.telegram_payment_charge_id
+        )
+        logging.info("Ошибка при поддержке звёздами: %e", e, exc_info=True)

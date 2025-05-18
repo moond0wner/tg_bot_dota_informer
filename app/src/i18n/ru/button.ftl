@@ -1,5 +1,13 @@
 get_info_about_account=Информация об аккаунте по ID 🎮
 search_account_by_nickname=Поиск аккаунта по нику 🥷
-get_info_about_match=Информация о матче ⚔️
+get_info_about_match=Информация о матче по ID⚔️
 get_info_about_players=Информация об игроках 🗃
+donate=Поддержать проект 💸
+user_profile=Профиль пользователя 👨‍💻
+link_account=Привязать аккаунт 🔐
+unlink_account=Отвязать аккаунт 🔓
+check_account=Просмотреть аккаунт 📋
+additionally=Настройка и поддержка ➡️
+previous_page=⬅️ Предыдущая страница 
+feedback=Обратная связь 💬
 back=В главное меню

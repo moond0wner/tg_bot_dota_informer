@@ -13,8 +13,9 @@ from ..parsers.account_info import (
     get_info_about_profile,
     get_info_about_wl,
     get_winrate_last_twenty_matches,
+    get_info_about_peers
 )
-from ..parsers.match_info import get_last_match_info
+from ..parsers.match_info import get_last_match_info, get_name_hero_from_match
 
 
 @dataclass
@@ -29,6 +30,7 @@ class AccountInfo:
     total_winrate: Optional[int] = None
     winrate_last_20_matches: Optional[int] = None
     last_match: Optional[str] = None
+    peers: Optional[str] = None
     avatar: Optional[str] = None
     profile_url: Optional[str] = None
     location: Optional[str] = None
@@ -39,6 +41,7 @@ class AccountInfo:
 class PlayerMatchInfo:
     account_id: Optional[int] = None
     name: Optional[str] = None
+    hero: Optional[str] = None
     team: Optional[str] = None
     rank: Optional[str] = None
     lvl: Optional[str] = None
@@ -72,11 +75,10 @@ async def get_info_about_players_of_match(
         player_info = PlayerMatchInfo(
             account_id=player.get("account_id"),
             name=player.get("personaname"),
+            hero=await get_name_hero_from_match(player.get('hero_id'), locale),
             team=locale.radiant() if player.get("IsRadiant", False) else locale.dire(),
-            rank=await get_rank_account(
-                account_id=player.get("account_id"), locale=locale
-            ),
-            lvl=player.get("level", "N/A"),
+            rank=await get_rank_account(account_id=player.get("account_id"), locale=locale),
+            lvl=player.get("level", locale.unknown()),
             networth=player.get("net_worth"),
             kda=f"{player.get('kills', 0)} | {player.get('deaths', 0)} | {player.get('assists', 0)}",
             aghanim_scepter=player.get("aghanims_scepter", 0),
@@ -123,6 +125,7 @@ async def get_info_about_account(
         last_wl_data = await get_winrate_last_twenty_matches(account_id)
         last_match_info = await get_last_match_info(account_id, locale)
         rank = await get_rank_account(account_id, locale)
+        peers_info = await get_info_about_peers(account_id)
 
         if player_data is None or wl_data is None:
             return None
@@ -135,18 +138,14 @@ async def get_info_about_account(
             total_winrate = 0
 
         try:
-            winrate_last_20_matches = round(
-                last_wl_data["win"]
-                / (last_wl_data["win"] + last_wl_data["lose"])
-                * 100,
-                2,
-            )
+            winrate_last_20_matches = round(last_wl_data["win"] / (last_wl_data["win"] + last_wl_data["lose"])* 100, 2)
         except ZeroDivisionError:
             winrate_last_20_matches = 0
 
         total_matches = wl_data["win"] + wl_data["lose"]
         if last_match_info:
             last_match = (
+                f'\n{locale.hero()} `{last_match_info[1]['hero_name']}`'
                 f'\n{locale.kda()} `{last_match_info[1]["kills"]}` \\| '
                 f'`{last_match_info[1]["deaths"]}` \\| '
                 f'`{last_match_info[1]["assists"]}`\n'
@@ -155,6 +154,13 @@ async def get_info_about_account(
             )
         else:
             last_match = locale.unknown()
+        
+        peers = ''
+        if peers_info:
+            for player in peers_info[:5]:
+                peers += f"**{player['name']}** \(ID: `{player['account_id']}`\) \| {locale.games()} `{player['games']}`\n"
+        else:
+            peers = locale.unknown()
 
         account_info = AccountInfo()
 
@@ -168,6 +174,7 @@ async def get_info_about_account(
         account_info.total_winrate = f"{total_winrate:.2f}"
         account_info.winrate_last_20_matches = f"{winrate_last_20_matches:.2f}"
         account_info.last_match = last_match
+        account_info.peers = peers
         account_info.avatar = profile.get("avatarfull")
         account_info.profile_url = profile.get("profileurl")
         account_info.account_id = account_id
@@ -176,5 +183,5 @@ async def get_info_about_account(
         account_info.has_dplus_now = profile.get("is_subscriber")
         return account_info
     except Exception as e:
-        logging.error(f"Возникла ошибка: {e}")
+        logging.error("Возникла ошибка в get_info_about_account: %s", e, exc_info=True)
         return None
