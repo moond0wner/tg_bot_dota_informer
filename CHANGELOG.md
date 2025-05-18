@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### 📚 Documentation
+
+- *(github)* Изменение README под новое обновление; изменение changelog.yaml .
+- *(github)* Изменение README_RU.md
+
+### 🧪 Testing
+
+- *(gen_changelog.yaml)* Тестовый коммит для проверки нового генератора changelog.md
+
 ### ⚙️ Miscellaneous Tasks
 
 - *(Dockerfile)* Изменение dockerfile
+- *(.gitignore)* Изменение .gitignore
 
 ## [1.0.1] - 2025-04-27
 
