@@ -4,12 +4,12 @@
 
 <p align="center">
    <img src="https://img.shields.io/badge/python-_3.13-red" alt="Python Version">
-   <img src="https://img.shields.io/badge/Version-_v1.0.1%20(Alpha)-blue"alt="Project Version">
+   <img src="https://img.shields.io/badge/Version-_v1.2.0%20(Test)-blue"alt="Project Version">
    <img src="https://img.shields.io/badge/License-_MIT-green" alt="License">
 </p>
 
 ## Get started
-@dota_informer_bot
+@dota_informer_bot (temporarily out of service)
 
 ## About
 
@@ -59,6 +59,14 @@ A Telegram bot that uses the OpenDota API and DotaBuff to provide information ab
     2.  The bot will prompt you to choose the language Russian or English.
     3.  Select the suggested language and return to the main menu.
     
+### 5. Project support
+
+* Description: Project support via Telegram Stars.
+* * Interaction:
+    1. Click the "Support the project" button.
+    2. The bot will prompt you to select the amount you want to donate.
+    3. Select the suggested amount and proceed to payment.
+* Errors: The bot will notify you if an error has occurred and return the donated stars.
 
 ## Developers
 

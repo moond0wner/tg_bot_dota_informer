@@ -1,50 +1,50 @@
-name: Generate Changelog
+# Название workflow, описывает его цель
+name: Generate Changelog  
 
+
+# Указывает событие, при котором будет запускаться workflow
 on:
+  # Событие push в репозиторий  
   push:
+    # Указывает, что workflow будет запускаться только при пушах в ветку main/master
     branches:
       - main
-  create:
-    tags:
-      - '*'
 
+
+# Определяет задачи, которые будут выполнены в рамках workflow
 jobs:
+  # Имя задачи, можно назвать по-другому, например, "update-changelog"  
   build:
-    runs-on: ubuntu-latest
+    # Запуск задачи на последней версии Ubuntu  
+    runs-on: ubuntu-latest  
+
+
+    # Шаги, которые необходимо выполнить в рамках задачи
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Download and Install git-cliff
-        run: |
-          curl -L "https://github.com/orhun/git-cliff/releases/download/v2.2.1/git-cliff-2.2.1-x86_64-unknown-linux-gnu.tar.gz" -o git-cliff.tar.gz
-          tar -xzf git-cliff.tar.gz
-          mv git-cliff-2.2.1/git-cliff /usr/local/bin/
-
-      - name: Generate Changelog
-        run: |
-          git-cliff --config cliff.toml --output CHANGELOG.md
-          # Проверяем, запущен ли workflow для тега
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            # Получаем номер версии из тега (удаляем "v", если есть)
-            RELEASE_VERSION=$(echo ${GITHUB_REF_NAME} | sed 's/^v//')
-            # Получаем текущую дату в формате YYYY-MM-DD
-            RELEASE_DATE=$(date +%Y-%m-%d)
-            # Формируем строку с информацией о релизе
-            RELEASE_INFO="## Release ${RELEASE_VERSION} (${RELEASE_DATE})"
-            # Вставляем информацию о релизе в начало файла CHANGELOG.md
-            echo "$RELEASE_INFO" | cat - CHANGELOG.md > temp.md && mv temp.md CHANGELOG.md
-          else
-            # Main branch build: Only generate Unreleased section if there are changes
-            git-cliff --config cliff.toml --output CHANGELOG.md --unreleased
-          fi
-
-      - name: Commit Changelog
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add CHANGELOG.md
-          git commit -m "Обновление CHANGELOG.md"
-          # Используем токен GitHub Actions для аутентификации при пуше
-          git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF_NAME}
+      # Использование действия checkout для клонирования репозитория  
+    - uses: actions/checkout@v2  
+      # Выкачивание всей истории коммитов, необходимо для корректной работы многих инструментов генерации changelog
+      with:
+        fetch-depth: 0  
+   
+    # Название шага
+    - name: Download and Install git-cliff
+      # Команды, которые будут выполнены в рамках шага
+      run: |  
+        curl -L "https://github.com/orhun/git-cliff/releases/download/v2.2.1/git-cliff-2.2.1-x86_64-unknown-linux-gnu.tar.gz" -o git-cliff.tar.gz  # Скачивание git-cliff
+        tar -xzf git-cliff.tar.gz  # Распаковка скачанного архива
+        mv git-cliff-2.2.1/git-cliff /usr/local/bin/  # Перемещение исполняемого файла git-cliff в директорию /usr/local/bin
+    # Шаг для генерации файла CHANGELOG.md
+    - name: Generate Changelog
+      # Запуск git-cliff с указанием конфигурационного файла и выходного файла
+      run: git-cliff --config cliff.toml --output CHANGELOG.md  
+     
+    # Шаг для коммита изменений
+    - name: Commit Changelog
+      # Команды для выполнения  
+      run: |  
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add CHANGELOG.md
+        git commit -m "Обновление CHANGELOG.md"
+        git push https://github.com/${{ github.repository }}.git HEAD:main  
