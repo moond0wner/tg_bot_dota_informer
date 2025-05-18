@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### ⚙️ Miscellaneous Tasks
+
+- *(Dockerfile)* Изменение dockerfile
+
 ## [1.0.1] - 2025-04-27
 
 ### 🚀 Features
